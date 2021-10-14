@@ -49,6 +49,9 @@ class PhotoViewer(QtWidgets.QGraphicsView):
             self._empty = True
             self.setDragMode(QtWidgets.QGraphicsView.NoDrag)
             self._photo.setPixmap(QtGui.QPixmap())
+        self._scene = QtWidgets.QGraphicsScene(self)
+        self._scene.addItem(self._photo)
+        self.setScene(self._scene)
         self.fitInView()
 
     def wheelEvent(self, event):
@@ -90,8 +93,7 @@ class Example(QtWidgets.QWidget):
     def refreshPixmap(self):
         frame = cv2.cvtColor(self.image, cv2.COLOR_BGR2RGB)
         image =  QtGui.QImage(frame,frame.shape[1],frame.shape[0],frame.strides[0],QtGui.QImage.Format_RGB888)
-        self.viewer.setPhoto(
-            QtGui.QPixmap.fromImage(image))
+        self.viewer.setPhoto(QtGui.QPixmap.fromImage(image))
         for box in self.boxes:
             self.viewer._scene.addRect(box[0])
 
@@ -157,11 +159,13 @@ class Example(QtWidgets.QWidget):
     def onRotateLeft(self):
         self.image = cv2.rotate(self.image, cv2.ROTATE_90_COUNTERCLOCKWISE)
         self.rotation -= 90
+        self.boxes = []
         self.refreshPixmap()
 
     def onRotateRight(self):
         self.image = cv2.rotate(self.image, cv2.ROTATE_90_CLOCKWISE)
         self.rotation += 90
+        self.boxes = []
         self.refreshPixmap()
 
     def onScanText(self):
