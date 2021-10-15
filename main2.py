@@ -149,11 +149,11 @@ class Example(QtWidgets.QWidget):
             super().keyPressEvent(ev)
 
     def onPhotoClicked(self, pos):
-        for box in self.boxes:
-            if box[0].contains(pos.x(), pos.y()):
+        for box, text in self.boxes:
+            if box.contains(pos.x(), pos.y()):
                 #self.boxes.remove(box)
                 self.text.moveCursor(QtGui.QTextCursor.End)
-                self.text.insertPlainText(box[1] + ' ')
+                self.text.insertPlainText(text.replace(';', ',') + ' ')
                 break
 
     def onRotateLeft(self):
