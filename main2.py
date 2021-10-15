@@ -115,8 +115,12 @@ class Example(QtWidgets.QWidget):
         rotate_left_action.triggered.connect(self.onRotateLeft)
         rotate_right_action = tb.addAction("rotate right")
         rotate_right_action.triggered.connect(self.onRotateRight)
+        tb.addSeparator()
         scan_action = tb.addAction("scan text")
         scan_action.triggered.connect(self.onScanText)
+        tb.addSeparator()
+        save_action = tb.addAction("save as textfile")
+        save_action.triggered.connect(self.onSaveFile)
 
         # hbox.addWidget(self.lbl)
         hbox.addWidget(self.viewer)
@@ -180,6 +184,15 @@ class Example(QtWidgets.QWidget):
                     rect = QtCore.QRectF(x, y, w, h)
                     self.boxes.append((rect, found_text))
         self.refreshPixmap()
+
+    def onSaveFile(self):
+        file_extension = '.csv'
+        filename, _ = QtWidgets.QFileDialog.getSaveFileName(self,'Select File', filter='*' + file_extension)
+        if filename:
+            if not filename.endswith(file_extension):
+                filename += file_extension
+            with open(str(filename), 'w', encoding='utf8') as f:
+                f.write(self.text.toPlainText())
 
 
 if __name__ == '__main__':
