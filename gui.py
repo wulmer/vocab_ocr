@@ -1,3 +1,5 @@
+from pathlib import Path
+
 import cv2
 import pytesseract
 from PySide6 import QtCore, QtGui, QtWidgets
@@ -89,6 +91,7 @@ class Example(QtWidgets.QWidget):
         self.add_new_line = False
         self.boxes = []
         self.initUI()
+        self.cwd = None
 
     def refreshPixmap(self):
         frame = cv2.cvtColor(self.image, cv2.COLOR_BGR2RGB)
@@ -107,6 +110,7 @@ class Example(QtWidgets.QWidget):
 
         self.text = QtWidgets.QPlainTextEdit(self)
         self.text.setCursorWidth(2)
+        self.text.setFont(QtGui.QFont('Segoe UI'))
         tb = QtWidgets.QToolBar(self)
 
         load_action = tb.addAction("load")
@@ -131,15 +135,18 @@ class Example(QtWidgets.QWidget):
         self.setLayout(vbox)
 
         self.move(300, 200)
+        self.resize(800, 600)
         self.setWindowTitle('Image with PyQt')
         self.show()
 
     def loadImage(self):
-        filename = QtWidgets.QFileDialog.getOpenFileName(self,'Select File')
-        self.original_image = cv2.imread(str(filename[0]))
-        self.image = self.original_image.copy()
-        self.boxes = []
-        self.refreshPixmap()
+        filename, _ = QtWidgets.QFileDialog.getOpenFileName(self, 'Select File', dir=str(self.cwd))
+        if filename:
+            self.cwd = Path(filename).parent
+            self.original_image = cv2.imread(filename)
+            self.image = self.original_image.copy()
+            self.boxes = []
+            self.refreshPixmap()
 
     def keyPressEvent(self, ev):
         if ev.key() == QtCore.Qt.Key_F1:
@@ -189,6 +196,7 @@ class Example(QtWidgets.QWidget):
         file_extension = '.csv'
         filename, _ = QtWidgets.QFileDialog.getSaveFileName(self,'Select File', filter='*' + file_extension)
         if filename:
+            self.cwd = Path(filename).parent
             if not filename.endswith(file_extension):
                 filename += file_extension
             with open(str(filename), 'w', encoding='utf8') as f:
